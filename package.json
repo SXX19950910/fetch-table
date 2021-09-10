@@ -1,16 +1,26 @@
 {
   "name": "fetch-table",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
   "main": "dist/fetch-table.umd.min.js",
   "author": "shixiaoxi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SXX19950910/fetch-table"
+  },
   "scripts": {
     "dev": "vue-cli-service serve",
     "build:doc": "vue-cli-service build",
     "build": "vue-cli-service build --name fetch-table --entry ./src/index.js --target lib"
   },
+  "keywords": [
+    "el-table",
+    "fetch",
+    "table",
+    "dynamic"
+  ],
   "dependencies": {
-    "fetch-table": "1.0.2"
+    "fetch-table": "1.0.3"
   },
   "devDependencies": {
     "@babel/standalone": "7.0.0",

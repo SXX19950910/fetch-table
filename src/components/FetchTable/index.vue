@@ -165,6 +165,24 @@ export default {
     },
     initSetting() {
       this.$refs.setting.init()
+    },
+    clearSelection() {
+      this.$refs.table && this.$refs.table.clearSelection()
+    },
+    toggleRowSelection(row, selected) {
+      this.$refs.table && this.$refs.table.toggleRowSelection(row, selected)
+    },
+    toggleAllSelection() {
+      this.$refs.table && this.$refs.table.toggleAllSelection()
+    },
+    setCurrentRow(row) {
+      this.$refs.table && this.$refs.table.setCurrentRow(row)
+    },
+    clearSort() {
+      this.$refs.table && this.$refs.table.clearSort()
+    },
+    doLayout() {
+      this.$refs.table && this.$refs.table.doLayout()
     }
   }
 }
