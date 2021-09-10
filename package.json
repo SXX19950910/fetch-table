@@ -1,0 +1,44 @@
+{
+  "name": "fetch-table",
+  "version": "1.0.2",
+  "private": false,
+  "main": "dist/fetch-table.umd.min.js",
+  "author": "shixiaoxi",
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "build:doc": "vue-cli-service build",
+    "build": "vue-cli-service build --name fetch-table --entry ./src/index.js --target lib"
+  },
+  "dependencies": {
+    "fetch-table": "1.0.2"
+  },
+  "devDependencies": {
+    "@babel/standalone": "7.0.0",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
+    "core-js": "^3.6.5",
+    "element-ui": "^2.15.6",
+    "loadsh": "^0.0.4",
+    "uuid": "^8.3.2",
+    "vue": "^2.6.11",
+    "vue-monaco-cdn": "^1.0.2",
+    "vue-router": "^3.2.0",
+    "vuedraggable": "^2.24.3",
+    "vuex": "^3.4.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "axios": "^0.21.1",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-analyzer": "^4.4.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "module": "dist/fetch-table.umd.js"
+}

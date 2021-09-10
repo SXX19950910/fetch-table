@@ -1,0 +1,43 @@
+.ml-15 {
+  margin-left: 15px !important;
+}
+
+.ml-5 {
+  margin-left: 5px;
+}
+
+.mr-5 {
+  margin-right: 5px;
+}
+
+.mb-5 {
+  margin-bottom: 5px;
+}
+
+.mb-15 {
+  margin-bottom: 15px;
+}
+
+.mr-15 {
+  margin-right: 15px;
+}
+
+.mt-30 {
+  margin-top: 30px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.cursor-move {
+  cursor: move;
+}
+
+
+.link {
+  cursor: pointer;
+  &:hover {
+    color: #409EFF;
+  }
+}
