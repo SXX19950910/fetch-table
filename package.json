@@ -1,6 +1,6 @@
 {
   "name": "fetch-table",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": false,
   "main": "dist/fetch-table.umd.min.js",
   "author": "shixiaoxi",
@@ -20,7 +20,7 @@
     "dynamic"
   ],
   "dependencies": {
-    "fetch-table": "1.0.3"
+    "fetch-table": "1.0.4"
   },
   "devDependencies": {
     "@babel/standalone": "7.0.0",

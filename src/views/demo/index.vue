@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import fetchTable from '../../components/FetchTable/index';
+// import fetchTable from '../../components/FetchTable/index';
 export default {
   components: {
-    fetchTable
+    // fetchTable
   },
   data() {
     return {

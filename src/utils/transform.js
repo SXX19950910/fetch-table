@@ -1,6 +1,3 @@
-import * as Babel from '@babel/standalone'
-import babelPluginTransformVueJsx from 'babel-plugin-transform-vue-jsx'
-
 class Transform {
     constructor(options = {}) {
         this.value = options.value
@@ -23,12 +20,6 @@ class Transform {
             return total
         }, '')
         return new Function(argument, `return ${this.value}()`)(...yieldIterator);
-    }
-
-    toRender() {
-        return Babel.transform(this.value, {
-            plugins: [babelPluginTransformVueJsx],
-        }).code
     }
 }
 
