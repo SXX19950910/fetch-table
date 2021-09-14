@@ -1,19 +1,19 @@
 <template>
   <div class="dynamic-table-wrap">
-    <el-table ref="table" v-loading="loading" element-loading-text="加载中..." v-bind="options" :data="data">
-      <el-table-column v-if="options.selection" type="selection"></el-table-column>
+    <el-table ref="table" v-loading="loading" element-loading-text="加载中..." v-bind="configOptions" :data="data">
+      <el-table-column v-if="configOptions.selection" type="selection"></el-table-column>
       <template v-for="(item, index) in columnList">
-        <el-table-column v-if="refresh && item.visible" :key="index" :type="item.type" :row-key="item.id" :label="item.label" :prop="item.prop" :show-tooltip-when-overflow="item.showOverflowTooltip" :resizable="item.resizable" :class-name="item.className" :column-key="item.columnKey" :fixed="item.fixed" :width="item.width" :min-width="item.minWidth" :align="item.align">
+        <el-table-column v-if="item.visible" :key="index" :type="item.type" :row-key="item.id" :label="item.label" :prop="item.prop" :show-tooltip-when-overflow="item.showOverflowTooltip" :resizable="item.resizable" :class-name="item.className" :column-key="item.columnKey" :fixed="item.fixed" :width="item.width" :min-width="item.minWidth" :align="item.align">
           <template slot="header" slot-scope="props">
-            <hell :row="props.row" :column="item" :value="item.label" :type="item.type" :context="context"></hell>
+            <hell v-if="refresh" :row="props.row" :column="item" :value="item.label" :type="item.type" :context="context"></hell>
           </template>
           <template slot-scope="props">
-            <cell :row="props.row" :column="item" :value="props.row[item.prop]" :type="item.type" :context="context"></cell>
+            <cell v-if="refresh" :row="props.row" :column="item" :value="props.row[item.prop]" :type="item.type" :context="context"></cell>
           </template>
         </el-table-column>
       </template>
-      <el-table-column width="40" align="center">
-        <template slot="header">
+      <el-table-column fixed="right" width="40" align="center">
+        <template v-if="refresh" slot="header">
           <i class="icon-btn el-icon-s-tools" @click="initSetting"></i>
         </template>
       </el-table-column>
@@ -30,13 +30,13 @@
         background
         :total="data.length">
     </el-pagination>
-    <column-setting ref="setting" :table-key="tableKey" :request-options="requestOptions" @submit="onSettingSubmit"/>
+    <column-setting ref="setting" :table-key="tableKey" :config-base-url="configBaseUrl" @submit="onSettingSubmit"/>
   </div>
 </template>
 
 <script>
 import request from '../../utils/request.js';
-import { deepClone } from '../../utils';
+import { deepClone, isObject, isArray } from '../../utils';
 import columnSetting from './ColumnSetting.vue'
 import cell from './cell.vue'
 import hell from './hell.vue'
@@ -49,15 +49,32 @@ export default {
     hell
   },
   props: {
+    immediately: {
+      type: Boolean,
+      default: true
+    },
     tableKey: {
       type: String,
       default: '',
       required: true
     },
+    request: Function,
+    response: Function,
     requestOptions: {
       type: Object,
-      default: () => {},
-      required: true
+      default() {
+        return {}
+      }
+    },
+    configBaseUrl: {
+      type: String,
+      default: 'http://jk.www.huishoubao.com/configApi'
+    },
+    requestParams: {
+      type: Object,
+      default() {
+        return {}
+      }
     },
     context: {
       type: Object,
@@ -69,8 +86,10 @@ export default {
   data() {
     return {
       loading: false,
-      columnList: [{ visible: true }],
-      options: {},
+      columnList: [{ visible: false }],
+      configOptions: {
+        params: '{}'
+      },
       data: [],
       page: {
         sizeOptions: [],
@@ -79,13 +98,22 @@ export default {
       },
       refresh: false,
       checkList: [],
-      baseDataUrl: '/table/query'
+      configRequestOptions: {
+        url: '/table/query',
+        method: 'POST',
+        timeout: 1000 * 60
+      }
     }
   },
   watch: {
     tableKey() {
       this.reset()
       this.init()
+    }
+  },
+  computed: {
+    newParams() {
+      return Object.assign(JSON.parse(this.configOptions.params), deepClone(this.requestParams))
     }
   },
   created() {
@@ -95,12 +123,12 @@ export default {
     async init() {
       this.loading = true
       await this.getOptions()
-      await this.getData()
+      this.immediately && await this.getData()
       this.loading = false
       this.refresh = true
     },
     reset() {
-      this.options = {}
+      this.configOptions = {}
       this.refresh = false
       this.columnList = [{ visible: true, label: '' }]
       this.data = []
@@ -111,6 +139,7 @@ export default {
     onSizeChange() {
     },
     formatData(list) {
+      if (!isArray(list)) return []
       return list.map((item, index) => {
         const newItem = {...item}
         newItem.$index = index + 1
@@ -118,21 +147,50 @@ export default {
       })
     },
     async getData() {
-      const {api, params} = this.options
+      const {api, params} = this.configOptions
       if (!api || !params) return
-      const options = Object.assign({ url: api, data: JSON.parse(params || '{}') }, this.requestOptions)
-      const res = await request(options).catch(err => {
+      const options = Object.assign({ url: api, data: this.newParams }, this.requestOptions)
+      const fetch = this.request || request
+      const res = await fetch(options).catch(err => {
         this.$message.error(err)
+        this.loading = false
         this.$emit('fetch-error', options)
       })
-      if (res && res.data) {
-        this.data = this.formatData(res.data.list)
+      let result = this.getRes(res)
+      this.data = this.formatData(result)
+    },
+    getRes(res) {
+      let result
+      const getList = target => {
+        for (const key in target) {
+          const current = target[key]
+          if (isObject(current)) {
+            getList(current)
+          } else if (isArray(current)) {
+            result = current
+            break;
+          }
+        }
       }
+      if (this.response) {
+        try {
+          result = this.response(res)
+        } catch (e) {
+          throw new Error(e)
+        }
+      } else {
+        getList(res)
+      }
+      if (!isArray(result)) {
+        console.error('接口返回字段必须包含List类型')
+      }
+      return result
     },
     async getOptions() {
-      const options = Object.assign({ url: this.baseDataUrl, data: { tableKey: this.tableKey } }, this.requestOptions)
+      const options = Object.assign(this.configRequestOptions, { baseURL: this.configBaseUrl, data: { tableKey: this.tableKey } })
       const res = await request(options).catch(err => {
         this.$message.error(err)
+        this.loading = false
         this.$emit('fetch-error', options)
       })
       if (res && res.data.list.length > 0) {
@@ -143,7 +201,7 @@ export default {
           newItem.type = ['default'].includes(newItem.type) ? '' : newItem.type
           return newItem
         })
-        this.options = deepClone(data)
+        this.configOptions = deepClone(data)
         this.page = data.pagination
         this.columnList = deepClone(columnList)
       }

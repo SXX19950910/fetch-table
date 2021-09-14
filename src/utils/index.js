@@ -9,3 +9,7 @@ export function deepClone(obj) {
     }
     return newObj
 }
+
+export const isObject = obj => Object.prototype.toString.call(obj).includes('Object')
+
+export const isArray = obj => Object.prototype.toString.call(obj).includes('Array')
