@@ -110,6 +110,7 @@ export default {
     },
     onSelectChange() {
       this.selectedList = []
+      console.log(this.checkList, this.columnList)
       this.checkList.forEach(item => {
         const current = this.columnList.find(column => column.prop === item)
         this.selectedList.push({...current})

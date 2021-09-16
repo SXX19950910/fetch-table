@@ -1,6 +1,6 @@
 {
   "name": "fetch-table",
-  "version": "1.0.64",
+  "version": "1.0.7",
   "private": false,
   "main": "dist/fetch-table.umd.min.js",
   "author": "shixiaoxi",

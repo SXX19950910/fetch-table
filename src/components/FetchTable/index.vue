@@ -3,7 +3,7 @@
     <el-table ref="table" v-loading="loading" element-loading-text="加载中..." v-bind="configOptions" :data="data">
       <el-table-column v-if="configOptions.selection" type="selection"></el-table-column>
       <template v-for="(item, index) in columnList">
-        <el-table-column v-if="item.visible" :key="index" :type="item.type" :row-key="item.id" :label="item.label" :prop="item.prop" :show-tooltip-when-overflow="item.showOverflowTooltip" :resizable="item.resizable" :class-name="item.className" :column-key="item.columnKey" :fixed="item.fixed" :width="item.width" :min-width="item.minWidth" :align="item.align">
+        <el-table-column v-if="item.visible" :key="index" :type="item.type" :row-key="item.id" :label="item.label" :fixed="item.fixed" :prop="item.prop" :show-tooltip-when-overflow="item.showOverflowTooltip" :resizable="item.resizable" :class-name="item.className" :column-key="item.columnKey" :width="item.width" :min-width="item.minWidth" :align="item.align">
           <template slot="header" slot-scope="props">
             <hell v-if="refresh" :row="props.row" :column="item" :value="item.label" :type="item.type" :context="context"></hell>
           </template>
@@ -197,7 +197,7 @@ export default {
         const data = res.data.list[0]
         const columnList = data.columnList.map(item => {
           const newItem = {...item}
-          newItem.fixed = newItem.fixed === 'none' ? '' : newItem.fixed
+          if (newItem.fixed === 'none') delete newItem.fixed
           newItem.type = ['default'].includes(newItem.type) ? '' : newItem.type
           return newItem
         })
