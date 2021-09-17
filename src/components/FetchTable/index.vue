@@ -28,7 +28,7 @@
         :page-size="page.size"
         layout="total, sizes, prev, pager, next, jumper"
         background
-        :total="data.length">
+        :total="page.total">
     </el-pagination>
     <column-setting ref="setting" :table-key="tableKey" :config-base-url="configBaseUrl" @submit="onSettingSubmit"/>
   </div>
@@ -36,7 +36,7 @@
 
 <script>
 import request from '../../utils/request.js';
-import { deepClone, isObject, isArray } from '../../utils';
+import {deepClone, isObject, isArray, merge, getValues} from '../../utils';
 import columnSetting from './ColumnSetting.vue'
 import cell from './cell.vue'
 import hell from './hell.vue'
@@ -68,7 +68,7 @@ export default {
     },
     configBaseUrl: {
       type: String,
-      default: 'http://jk.www.huishoubao.com/configApi'
+      default: '//jk.www.huishoubao.com/configApi'
     },
     requestParams: {
       type: Object,
@@ -94,7 +94,12 @@ export default {
       page: {
         sizeOptions: [],
         current: 0,
-        size: 20
+        size: 20,
+        currentKey: '',
+        sizeKey: '',
+        totalKey: '',
+        defaultCurrent: '',
+        defaultSize: ''
       },
       refresh: false,
       checkList: [],
@@ -113,7 +118,15 @@ export default {
   },
   computed: {
     newParams() {
-      return Object.assign(JSON.parse(this.configOptions.params), deepClone(this.requestParams))
+      const { currentKey, current, size, sizeKey } = this.page
+      const params = merge(JSON.parse(this.configOptions.params), deepClone(this.requestParams))
+      params[currentKey] = String(current - 1)
+      params[sizeKey] = String(size)
+      return params
+    },
+    pageParams() {
+      const { currentKey, sizeKey } = this.page
+      console.log(currentKey, sizeKey)
     }
   },
   created() {
@@ -121,10 +134,8 @@ export default {
   },
   methods: {
     async init() {
-      this.loading = true
       await this.getOptions()
       this.immediately && await this.getData()
-      this.loading = false
       this.refresh = true
     },
     reset() {
@@ -134,9 +145,13 @@ export default {
       this.data = []
       this.$nextTick(() => this.refresh = true)
     },
-    onCurrentChange() {
+    onCurrentChange(current) {
+      this.page.current = current
+      this.getData()
     },
-    onSizeChange() {
+    onSizeChange(data) {
+      this.page.size = data
+      this.getData()
     },
     formatData(list) {
       if (!isArray(list)) return []
@@ -147,17 +162,22 @@ export default {
       })
     },
     async getData() {
-      const {api, params} = this.configOptions
+      const { api, params } = this.configOptions
       if (!api || !params) return
-      const options = Object.assign({ url: api, data: this.newParams }, this.requestOptions)
+      this.loading = true
+      const options = merge({ url: api, data: this.newParams }, this.requestOptions)
       const fetch = this.request || request
       const res = await fetch(options).catch(err => {
         this.$message.error(err)
         this.loading = false
         this.$emit('fetch-error', options)
       })
-      let result = this.getRes(res)
-      this.data = this.formatData(result)
+      this.loading = false
+      this.page.total = this.getResPageInfo(res)
+      this.data = this.formatData(this.getRes(res))
+    },
+    getResPageInfo(res) {
+      return Number(getValues(res, this.page.totalKey)[this.page.totalKey])
     },
     getRes(res) {
       let result
@@ -202,7 +222,7 @@ export default {
           return newItem
         })
         this.configOptions = deepClone(data)
-        this.page = data.pagination
+        this.page = deepClone(data.pagination)
         this.columnList = deepClone(columnList)
       }
     },
