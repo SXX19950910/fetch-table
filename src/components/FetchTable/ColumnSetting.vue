@@ -15,10 +15,12 @@
         <div class="right-area">
           <div class="title-box">已选字段</div>
           <el-scrollbar class="scroll-wrapper">
-            <draggable v-model="selectedList" class="right-check_block">
-              <div v-for="(item, index) in selectedList" :key="index" class="select-item cursor-move">
-                <span><i class="el-icon-sort mr-5"></i>{{ item.label }}</span><i v-if="!item.isDefault" class="el-icon-close" @click.stop="handleRemoveColumn(item)"></i>
-              </div>
+            <draggable v-model="selectedList" class="right-check_block" :options="{ animation: 200 }">
+              <template v-for="(item, index) in selectedList">
+                <div v-if="item.visible" :key="index" class="select-item cursor-move">
+                  <span><i class="el-icon-sort mr-5"></i>{{ item.label }}</span><i v-if="!item.isDefault" class="el-icon-close" @click.stop="handleRemoveColumn(item)"></i>
+                </div>
+              </template>
             </draggable>
           </el-scrollbar>
         </div>
@@ -32,6 +34,7 @@
 </template>
 
 <script>
+import { deepClone } from '../../utils'
 import request from '../../utils/request.js';
 import drag from '../directive/drag.js'
 import draggable from 'vuedraggable'
@@ -63,17 +66,26 @@ export default {
       loading: true,
       selectedList: [],
       checkList: [],
-      columnList: []
+      columnList: [],
+      originColumnList: [],
+      originSelectList: []
     }
   },
   created() {
-    this.getDefaultData()
+    this.getData()
   },
   methods: {
     init() {
       this.visible = true
     },
-    async getDefaultData() {
+    getDefaultData() {
+      this.checkList = []
+      this.originColumnList.map(item => {
+        if (item.visible) this.checkList.push(item.prop)
+      })
+      this.selectedList = deepClone(this.originSelectList)
+    },
+    async getData() {
       this.selectedList = []
       this.loading = true
       const options = {
@@ -91,13 +103,19 @@ export default {
       })
       this.loading = false
       if (res && res.data && res.data.list.length > 0) {
-        this.columnList = res.data.list[0].columnList
-        this.columnList.forEach(item => {
+        const data = res.data.list[0].columnList
+        const map = new Map()
+        this.columnList = []
+        data.map(item => {
           const newItem = { ...item }
-          if (newItem.visible) {
+          if (!map.has(item.prop)) {
+            map.set(item.prop, item.prop)
+            this.columnList.push(newItem)
             this.selectedList.push(newItem)
           }
         })
+        this.originColumnList = deepClone(this.columnList)
+        this.originSelectList = deepClone(this.selectedList)
       }
     },
     handleRemoveColumn(data) {
@@ -109,19 +127,40 @@ export default {
       this.onSelectChange()
     },
     onSelectChange() {
-      this.selectedList = []
-      console.log(this.checkList, this.columnList)
+      const indexMap = new Map()
+      this.selectedList.forEach((item, index) => {
+        item.visible = false
+        indexMap.set(item.prop, index)
+      })
       this.checkList.forEach(item => {
-        const current = this.columnList.find(column => column.prop === item)
-        this.selectedList.push({...current})
+        const index = indexMap.get(item)
+        this.selectedList[index].visible = true
       })
     },
+    saveDefaultData() {
+      const indexMap = new Map()
+      this.columnList.map((item, index) => {
+        indexMap.set(item.prop, index)
+        item.visible = false
+      })
+      this.checkList.forEach(item => {
+        const index = indexMap.get(item)
+        this.columnList[index].visible = true
+      })
+      this.originColumnList = deepClone(this.columnList)
+      this.originSelectList = deepClone(this.selectedList)
+    },
     handleSubmit() {
-      this.$emit('submit', this.selectedList.map(item => item.prop))
-      this.handleCancel()
+      this.saveDefaultData()
+      this.$emit('submit', this.selectedList.reduce((total, item) => {
+        item.visible && total.push(item.prop)
+        return total
+      }, []))
+      this.visible = false
     },
     handleCancel() {
       this.visible = false
+      this.getDefaultData()
     }
   }
 }
@@ -202,13 +241,13 @@ export default {
       border-radius: 2px;
       box-sizing: border-box;
       .right-check_block {
-        padding: 10px 0 10px 0;
+        padding: 6px 0 10px 0;
         box-sizing: border-box;
         .select-item {
           cursor: move;
           width: 100%;
           font-size: 12px;
-          line-height: 32px;
+          line-height: 36px;
           display: flex;
           padding: 0 15px;
           align-items: center;

@@ -17,7 +17,7 @@ export default {
     return {
       data: [],
       options: {
-        url: 'http://xianyu-yiyanhuo-admin-api.huishoubao.com/api/afterSale/getList',
+        url: 'https://xianyu-yiyanhuo-admin-api.huishoubao.com/api/afterSale/getList',
         data: {
           afterSaleNo: "",
           buyerName: "",

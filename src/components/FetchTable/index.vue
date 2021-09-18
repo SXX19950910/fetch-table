@@ -68,7 +68,7 @@ export default {
     },
     configBaseUrl: {
       type: String,
-      default: '//jk.www.huishoubao.com/configApi'
+      default: 'https://jk.www.huishoubao.com/configApi'
     },
     requestParams: {
       type: Object,
@@ -123,10 +123,6 @@ export default {
       params[currentKey] = String(current - 1)
       params[sizeKey] = String(size)
       return params
-    },
-    pageParams() {
-      const { currentKey, sizeKey } = this.page
-      console.log(currentKey, sizeKey)
     }
   },
   created() {
@@ -173,11 +169,13 @@ export default {
         this.$emit('fetch-error', options)
       })
       this.loading = false
-      this.page.total = this.getResPageInfo(res)
-      this.data = this.formatData(this.getRes(res))
+      const tableData = this.formatData(this.getRes(res))
+      this.page.total = this.getResPageInfo(res) || tableData.length
+      this.data = tableData
     },
     getResPageInfo(res) {
-      return Number(getValues(res, this.page.totalKey)[this.page.totalKey])
+      const totalValue = getValues(res, this.page.totalKey)[this.page.totalKey]
+      return parseInt(totalValue) || null
     },
     getRes(res) {
       let result

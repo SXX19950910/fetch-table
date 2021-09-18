@@ -24,10 +24,10 @@ export function getValues(target, ...keys) {
         maps.map(item => {
             const key = item[0]
             const value = item[1]
-            if (isObject(value)) {
-                get(value, keyName)
-            } else if (isArray(value)) {
+            if (isArray(value)) {
                 value.map(field => get(field, keyName))
+            } else if (isObject(value)) {
+                get(value, keyName)
             } else if (keyName === key) {
                 result[key] = value
             }
