@@ -1,9 +1,6 @@
 <template>
  <div class="table-index-wrap">
-   <div class="handle-area text-right">
-     <el-button type="primary" size="small" @click="handleGoAdd">新增列表</el-button>
-   </div>
-   <fetch-table class="mt-30" table-key="订单系统-闲鱼已验货售后订单列表" :request-options="options"></fetch-table>
+   <fetch-table class="mt-30" table-key="订单系统-闲鱼已验货售后订单列表" :request-options="options" :span-method="spanMethod"></fetch-table>
  </div>
 </template>
 
@@ -22,14 +19,14 @@ export default {
           afterSaleNo: "",
           buyerName: "",
           buyerPhone: "",
-          createBeginTime: "2021-09-01",
-          createEndTime: "2021-09-30",
+          createBeginTime: "2021-09-23 00:00:00",
+          createEndTime: "2021-09-30 23:59:59",
           expressNo: "",
           imei: "",
           merchantGoodsNo: "",
           refundStatus: "",
           sn: "",
-          token: "d5265db383ef9ad3c73f93fcdbe8cafa",
+          token: "e01b8509b1aab5553d301fec8627721e",
           uid: "1937",
           xyOrderNo: "",
         }
@@ -39,11 +36,10 @@ export default {
   created() {
   },
   methods: {
-    handleGoAdd() {
-      this.$router.push({ name: 'Edit' })
-    },
     response(res) {
       return res.data.list
+    },
+    spanMethod({ row, column, rowIndex, columnIndex }) {
     }
   }
 }

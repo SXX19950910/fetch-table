@@ -213,6 +213,7 @@ export default {
       line-height: 36px;
       padding: 0 15px;
       font-size: 12px;
+      border-bottom: 1px solid #EBEEF5;
       box-sizing: border-box;
     }
     .left-area {

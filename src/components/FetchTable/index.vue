@@ -1,6 +1,6 @@
 <template>
   <div class="dynamic-table-wrap">
-    <el-table ref="table" v-loading="loading" element-loading-text="加载中..." v-bind="configOptions" :data="data">
+    <el-table ref="table" v-loading="loading" element-loading-text="加载中..." v-bind="configOptions" :span-method="spanMethod" :data="data">
       <el-table-column v-if="configOptions.selection" type="selection"></el-table-column>
       <template v-for="(item, index) in columnList">
         <el-table-column v-if="item.visible" :key="index" :type="item.type" :row-key="item.id" :label="item.label" :fixed="item.fixed" :prop="item.prop" :show-tooltip-when-overflow="item.showOverflowTooltip" :resizable="item.resizable" :class-name="item.className" :column-key="item.columnKey" :width="item.width" :min-width="item.minWidth" :align="item.align">
@@ -58,6 +58,8 @@ export default {
       default: '',
       required: true
     },
+    summaryMethod: Function,
+    spanMethod: Function,
     request: Function,
     response: Function,
     requestOptions: {
@@ -86,7 +88,7 @@ export default {
   data() {
     return {
       loading: false,
-      columnList: [{ visible: false }],
+      columnList: [{ visible: true }],
       configOptions: {
         params: '{}'
       },
