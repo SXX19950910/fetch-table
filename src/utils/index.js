@@ -1,3 +1,14 @@
+import request from './request'
+import config from './../config/index'
+
+export async function sleep(delay) {
+    return new Promise(resolve => {
+        setTimeout(() => resolve(), delay)
+    })
+}
+
+const getLocalTableList = () => JSON.parse(localStorage.getItem('tableList') || '[]')
+
 export function deepClone(obj) {
     let newObj = Array.isArray(obj) ? [] : {}
     if (obj && typeof obj === "object") {
@@ -60,4 +71,35 @@ export function merge (target, ...arg) {
             return subAcc
         }, acc)
     }, target)
+}
+
+export async function setTableData(data) {
+    const options = Object.assign({ baseURL: `${config.configBaseUrl}/table/query`, data: {} }, data)
+    const res = await request({
+        url: options.baseURL,
+        data: options.data
+    }).catch(err => {
+        throw new Error('获取table配置数据发生错误,' + err)
+    })
+    if (res && res.data.list) {
+        localStorage.setItem('tableList', JSON.stringify(res.data.list))
+    }
+}
+
+export async function getTableData(options) {
+    return new Promise(async (resolve, reject) => {
+        let result = { data: { list: [] } }
+        const data = getLocalTableList().find(item => item.tableKey === options.data.tableKey)
+        if (!data) {
+            const res = await request({ url: `${config.configBaseUrl}/table/query`, data: options.data }).catch(err => {
+                reject(options.data.tableKey + '配置数据未找到！，请查看tableKey是否正确,' + err)
+            })
+            if (res && res.data.list) {
+                result.data.list = res.data.list
+            }
+        } else {
+            result.data.list.push(data)
+        }
+        resolve(result)
+    })
 }

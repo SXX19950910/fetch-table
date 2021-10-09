@@ -34,8 +34,7 @@
 </template>
 
 <script>
-import { deepClone } from '../../utils'
-import request from '../../utils/request.js';
+import { deepClone, getTableData } from '../../utils'
 import drag from '../directive/drag.js'
 import draggable from 'vuedraggable'
 export default {
@@ -71,11 +70,14 @@ export default {
       originSelectList: []
     }
   },
-  created() {
-    this.getData()
+  computed: {
+    isLoaded() {
+      return this.columnList.length > 0
+    }
   },
   methods: {
     init() {
+      this.getData()
       this.visible = true
     },
     getDefaultData() {
@@ -86,6 +88,7 @@ export default {
       this.selectedList = deepClone(this.originSelectList)
     },
     async getData() {
+      if (this.isLoaded) return
       this.selectedList = []
       this.loading = true
       const options = {
@@ -97,7 +100,7 @@ export default {
           tableKey: this.tableKey
         }
       }
-      const res = await request(options).catch(err => {
+      const res = await getTableData(options).catch(err => {
         this.$message.error(err)
         this.loading = false
       })

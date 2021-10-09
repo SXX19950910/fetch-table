@@ -7,9 +7,9 @@ import store from './store'
 import api from './api'
 import _ from 'loadsh/lang'
 
-// import fetchTable from 'fetch-table';
+import fetchTable from './index';
 // import 'fetch-table/dist/fetch-table.css'
-// Vue.use(fetchTable)
+Vue.use(fetchTable)
 
 Vue.config.productionTip = false
 Vue.use(ElementUi)

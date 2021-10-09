@@ -1,6 +1,6 @@
 <template>
  <div class="table-index-wrap">
-   <fetch-table class="mt-30" table-key="订单系统-闲鱼已验货售后订单列表" :request-options="options" :span-method="spanMethod"></fetch-table>
+   <fetch-table class="mt-30" table-key="收货系统-闲鱼已验货收货列表"></fetch-table>
  </div>
 </template>
 

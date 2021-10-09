@@ -36,10 +36,11 @@
 
 <script>
 import request from '../../utils/request.js';
-import {deepClone, isObject, isArray, merge, getValues} from '../../utils';
+import {deepClone, isObject, isArray, merge, getValues, getTableData} from '../../utils';
 import columnSetting from './ColumnSetting.vue'
 import cell from './cell.vue'
 import hell from './hell.vue'
+import config from './../../config/index'
 
 export default {
   name: 'fetch-table',
@@ -70,7 +71,7 @@ export default {
     },
     configBaseUrl: {
       type: String,
-      default: 'https://jk.www.huishoubao.com/configApi'
+      default: config.configBaseUrl
     },
     requestParams: {
       type: Object,
@@ -122,7 +123,7 @@ export default {
     newParams() {
       const { currentKey, current, size, sizeKey } = this.page
       const params = merge(JSON.parse(this.configOptions.params), deepClone(this.requestParams))
-      params[currentKey] = String(current - 1)
+      params[currentKey] = String((current - 1) <= 0 ? 0 : current - 1)
       params[sizeKey] = String(size)
       return params
     }
@@ -175,7 +176,7 @@ export default {
       this.page.total = this.getResPageInfo(res) || tableData.length
       this.data = tableData
     },
-    getResPageInfo(res) {
+    getResPageInfo(res = {}) {
       const totalValue = getValues(res, this.page.totalKey)[this.page.totalKey]
       return parseInt(totalValue) || null
     },
@@ -203,12 +204,13 @@ export default {
       }
       if (!isArray(result)) {
         console.error('接口返回字段必须包含List类型')
+        result = []
       }
       return result
     },
     async getOptions() {
       const options = Object.assign(this.configRequestOptions, { baseURL: this.configBaseUrl, data: { tableKey: this.tableKey } })
-      const res = await request(options).catch(err => {
+      const res = await getTableData(options).catch(err => {
         this.$message.error(err)
         this.loading = false
         this.$emit('fetch-error', options)
@@ -223,6 +225,7 @@ export default {
         })
         this.configOptions = deepClone(data)
         this.page = deepClone(data.pagination)
+        // console.log(this.page)
         this.columnList = deepClone(columnList)
       }
     },
