@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const base = {
-    baseURL: process.env.VUE_APP_URL,
+    baseURL: process.env.VUE_APP_DEV_URL,
     timeout: 1000 * 60,
     method: 'POST'
 }

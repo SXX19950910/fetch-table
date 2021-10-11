@@ -91,7 +91,7 @@ export async function getTableData(options) {
         let result = { data: { list: [] } }
         const data = getLocalTableList().find(item => item.tableKey === options.data.tableKey)
         if (!data) {
-            const res = await request({ url: `${config.configBaseUrl}/table/query`, data: options.data }).catch(err => {
+            const res = await request({ url: `${options.baseURL}/table/query`, data: options.data }).catch(err => {
                 reject(options.data.tableKey + '配置数据未找到！，请查看tableKey是否正确,' + err)
             })
             if (res && res.data.list) {

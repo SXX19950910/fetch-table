@@ -22,11 +22,16 @@ const externals = isProd ? {
     '@babel/standalone': '@babel/standalone',
     'vuedraggable': 'vuedraggable',
     'babel-plugin-transform-vue-jsx': 'babel-plugin-transform-vue-jsx',
-    'fetch-tale': 'fetch-table'
+    'fetch-tale': 'fetch-table',
+    '_core-js': 'core-js'
 } : ''
 
 const config = {
     publicPath: "./",
+    productionSourceMap: !isProd,
+    css: {
+        sourceMap: false
+    },
     configureWebpack: {
         output: {
             libraryExport: 'default'

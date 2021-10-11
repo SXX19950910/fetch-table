@@ -25,7 +25,7 @@ export default {
   render(h) {
     const { context, row, column } = this
     if (column.renderHeader) {
-      return new Transform({ value: column.renderHeader, }).runStrFunction({ h, context, row, column })
+      return new Transform({ value: column.renderHeader }).runStrFunction({ h, context, row, column })
     } else {
       return h('span', [this.value])
     }
