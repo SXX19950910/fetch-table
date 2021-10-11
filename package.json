@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/SXX19950910/fetch-table"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com --scope=@SXX19950910/fetch-table"
+  },
   "scripts": {
     "dev": "vue-cli-service serve",
     "build:doc": "vue-cli-service build",
