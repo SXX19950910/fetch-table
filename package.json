@@ -1,7 +1,8 @@
 {
-  "name": "fetch-table",
-  "version": "1.0.81",
+  "name": "@SXX19950910/fetch-table",
+  "version": "1.0.82",
   "private": false,
+  "license": "MIT",
   "main": "dist/fetch-table.umd.min.js",
   "author": "shixiaoxi",
   "repository": {
@@ -9,7 +10,7 @@
     "url": "https://github.com/SXX19950910/fetch-table"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com --scope=@SXX19950910/fetch-table"
+    "registry": "https://npm.pkg.github.com/SXX19950910"
   },
   "scripts": {
     "dev": "vue-cli-service serve",

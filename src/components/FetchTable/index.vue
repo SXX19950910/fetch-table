@@ -136,6 +136,7 @@ export default {
       await this.getOptions()
       this.immediately && await this.getData()
       this.refresh = true
+      this.$emit('ready')
     },
     reset() {
       this.configOptions = {}
