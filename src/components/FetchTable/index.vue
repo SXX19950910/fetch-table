@@ -8,7 +8,7 @@
             <hell v-if="refresh" :row="props.row" :column="item" :value="item.label" :type="item.type" :context="context"></hell>
           </template>
           <template slot-scope="props">
-            <cell v-if="refresh" :row="props.row" :column="item" :value="props.row[item.prop]" :type="item.type" :context="context"></cell>
+            <cell v-if="refresh" :row="props.row" :column="item" :value="getValue(props.row, item.prop)" :type="item.type" :context="context"></cell>
           </template>
         </el-table-column>
       </template>
@@ -138,6 +138,29 @@ export default {
       this.refresh = true
       this.$emit('ready')
     },
+    getValue(data, props) {
+      let result = {}
+      const keys = props.split('.')
+      const getArrayIndex = (str) => {
+        const reg = /\[(.*?)\]/gi;
+        const arr = str.match(reg)
+        return arr ? arr[0].replace(reg, '$1') : ''
+      }
+      try {
+        keys.forEach((item, index) => {
+          const arrIndex = getArrayIndex(item)
+          if (arrIndex) {
+            keys[index] = keys[index].replace(/\[.*?\]/g, '')
+            keys.splice(index + 1, 0, arrIndex)
+          }
+        })
+        keys.forEach(item => result = result[item] || data[item])
+      } catch (e) {
+        console.error(e)
+        result = ''
+      }
+      return result
+    },
     reset() {
       this.configOptions = {}
       this.refresh = false
@@ -228,6 +251,7 @@ export default {
         this.page = deepClone(data.pagination)
         // console.log(this.page)
         this.columnList = deepClone(columnList)
+        // console.log(this.columnList)
       }
     },
     onSettingSubmit(checklist) {
