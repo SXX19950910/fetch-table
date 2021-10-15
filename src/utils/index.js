@@ -77,7 +77,8 @@ export async function setTableData(data) {
     const options = Object.assign({ baseURL: `${config.configBaseUrl}/table/query`, data: {} }, data)
     const res = await request({
         url: options.baseURL,
-        data: options.data
+        data: options.data,
+        method: 'POST'
     }).catch(err => {
         throw new Error('获取table配置数据发生错误,' + err)
     })
