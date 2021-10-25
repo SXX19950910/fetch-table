@@ -1,14 +1,14 @@
 <template>
  <div class="table-index-wrap">
-   <fetch-table class="mt-30" table-key="华为官翻sku列表" :request-params="options" :request-options="requestOptions" config-base-url="https://jk.www.huishoubao.com/configApi"></fetch-table>
+   <fetch-table class="mt-30" table-key="华为发货单列表" :request-params="options" :request-options="requestOptions" :response="onResponse" config-base-url="https://jk.www.huishoubao.com/configApi"></fetch-table>
  </div>
 </template>
 
 <script>
-// import fetchTable from '../../components/FetchTable/index';
+import fetchTable from '../../components/FetchTable/index';
 export default {
   components: {
-    // fetchTable
+    fetchTable
   },
   data() {
     return {
@@ -21,16 +21,21 @@ export default {
           "_head": {
             "_version": "0.01",
             "_msgType": "request",
-            "_timestamps": "1634183796",
-            "_interface": "SalesProduct.Hwout.Config.GetRule",
+            "_timestamps": "1635144188",
+            "_interface": "SalesProduct.Hwout.Order.OrderOutList",
             "_remark": ""
           },
           "_param": {
-            loginToken: "4202dc79931d389980243883c7853a29",
-            loginUserId: "1911",
-            "attr": "map_sku,map_product,map_grade",
-            "page": "0",
-            "show": "20"
+            "loginUserId": "1937",
+            "loginToken": "30e6630d1078d373d4eb6a79b4119d08",
+            "page": "2",
+            "show": "20",
+            "hw_sn": "",
+            "hw_out_sn": "",
+            "out_status": "",
+            "out_sn": "",
+            "map_attr": "map_sku,map_product,map_grade",
+            "attr": "out_detail"
           }
         }
       }
@@ -40,11 +45,8 @@ export default {
   },
   methods: {
     onResponse(res) {
-      return res._data._data.data.map(item => {
-        const newItem = {...item}
-        newItem.Fsku_desc = [newItem.Fsku_desc]
-        return newItem
-      })
+      console.log(res._data._data.data)
+      return res._data._data.data
     },
     response(res) {
       return res.data.list

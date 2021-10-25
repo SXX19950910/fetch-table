@@ -1,6 +1,6 @@
 {
   "name": "fetch-table",
-  "version": "1.0.84",
+  "version": "1.0.87",
   "private": false,
   "license": "MIT",
   "main": "dist/fetch-table.umd.min.js",

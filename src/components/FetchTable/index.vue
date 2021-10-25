@@ -1,7 +1,7 @@
 <template>
   <div class="dynamic-table-wrap">
-    <el-table ref="table" v-loading="loading" element-loading-text="加载中..." v-bind="configOptions" :span-method="spanMethod" :data="data">
-      <el-table-column v-if="configOptions.selection" type="selection"></el-table-column>
+    <el-table ref="table" v-loading="loading" element-loading-text="加载中..." v-bind="configOptions" :span-method="spanMethod" :data="data" @row-click="onRowClick" @select="onSelect" @select-all="onSelectAll">
+      <el-table-column v-if="configOptions.selection" type="selection" :selectable="selectable"></el-table-column>
       <template v-for="(item, index) in columnList">
         <el-table-column v-if="item.visible" :key="index" :type="item.type" :row-key="item.id" :label="item.label" :fixed="item.fixed" :prop="item.prop" :show-tooltip-when-overflow="item.showOverflowTooltip" :resizable="item.resizable" :class-name="item.className" :column-key="item.columnKey" :width="item.width" :min-width="item.minWidth" :align="item.align">
           <template slot="header" slot-scope="props">
@@ -60,6 +60,7 @@ export default {
       required: true
     },
     summaryMethod: Function,
+    selectable: Function,
     spanMethod: Function,
     request: Function,
     response: Function,
@@ -104,6 +105,7 @@ export default {
         defaultCurrent: '',
         defaultSize: ''
       },
+      isIndexPage: false,
       refresh: false,
       checkList: [],
       configRequestOptions: {
@@ -123,7 +125,7 @@ export default {
     newParams() {
       const { currentKey, current, size, sizeKey } = this.page
       const params = merge(JSON.parse(this.configOptions.params), deepClone(this.requestParams))
-      params[currentKey] = String((current - 1) <= 0 ? 0 : current - 1)
+      params[currentKey] = this.isIndexPage ? String((current - 1) <= 0 ? 0 : current - 1) : current
       params[sizeKey] = String(size)
       return params
     }
@@ -249,7 +251,7 @@ export default {
         })
         this.configOptions = deepClone(data)
         this.page = deepClone(data.pagination)
-        // console.log(this.page)
+        this.isIndexPage = data.pagination.current === -1
         this.columnList = deepClone(columnList)
         // console.log(this.columnList)
       }
@@ -289,6 +291,15 @@ export default {
     },
     doLayout() {
       this.$refs.table && this.$refs.table.doLayout()
+    },
+    onSelect(selection, row) {
+      this.$emit('select', selection, row)
+    },
+    onSelectAll(selection) {
+      this.$emit('select', selection)
+    },
+    onRowClick(row, column, event) {
+      this.$emit('row-click', row, column, event)
     }
   }
 }
