@@ -201,6 +201,7 @@ export default {
       const tableData = this.formatData(this.getRes(res))
       this.page.total = this.getResPageInfo(res) || tableData.length
       this.data = tableData
+      return [deepClone(res), deepClone(tableData)]
     },
     getResPageInfo(res = {}) {
       const totalValue = getValues(res, this.page.totalKey)[this.page.totalKey]
@@ -251,7 +252,7 @@ export default {
         })
         this.configOptions = deepClone(data)
         this.page = deepClone(data.pagination)
-        this.isIndexPage = data.pagination.current === -1
+        this.isIndexPage = parseInt(data.pagination.current) === 0
         this.columnList = deepClone(columnList)
         // console.log(this.columnList)
       }
